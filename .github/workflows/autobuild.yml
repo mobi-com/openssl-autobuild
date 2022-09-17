@@ -19,21 +19,30 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          lfs: true
 
-      - uses: ilammy/setup-nasm@v1
+      - name: Checkout LFS objects
+        run: git lfs checkout
 
-      - uses: ilammy/msvc-dev-cmd@v1
+      - name: Setup nasm
+        uses: ilammy/setup-nasm@v1
+
+      - name: Setup Visual Studio
+        uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: ${{matrix.arch}}
 
-      - name: Build OpenSSL
+      - name: Build
         run: .scripts/autobuild.ps1
 
-      - name: Pull the recent changes
+      - name: Pull
         run: git pull
 
-      - uses: stefanzweifel/git-auto-commit-action@v4
+      - name: Commit
+        uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Automated ${{matrix.arch}} build
           file_pattern: '*.zip'
