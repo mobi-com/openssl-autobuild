@@ -46,7 +46,7 @@ foreach ($tarball in $links.href) {
         $branch = $basename -replace '^(openssl-[0-9]+\.[0-9]+).*', '$1'
     }
 
-    $zip = $basename + '-' + $arch + '.zip'
+    $zip = 'archive/' + $basename + '-' + $arch + '.zip'
     if (Test-Path -Path $zip -PathType Leaf) {
         Write-Host $zip 'already exists'
         continue
@@ -81,15 +81,12 @@ foreach ($tarball in $links.href) {
     Set-Location ../..
 
     Write-Host 'Compressing' $zip
-    Compress-Archive -Path $dst -DestinationPath $zip -Force
-    if (([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-        $link = $branch + '-' + $arch + '.zip'
-        Write-Host 'Linking' $link
-        if (Test-Path -Path $link -PathType Leaf) {
-            Remove-Item -Force $link
-        }
-        $result = New-Item -ItemType SymbolicLink -Path $link -Target $zip
-    } else {
-        Write-Host 'Linking' $link 'requires administrative privileges'
+    if (-Not (Test-Path -Path 'archive' -PathType Container)) {
+        $result = New-Item -ItemType Directory -Name 'archive'
     }
+    Compress-Archive -Path $dst -DestinationPath $zip -Force
+
+    $permanent = $branch + '-' + $arch + '.zip'
+    Write-Host 'Copying' $zip 'to' $permanent
+    Copy-Item $zip -Destination $permanent
 }
