@@ -1,12 +1,16 @@
 function Build-OpenSSL {
-    param ($Dst)
+    param ($Branch, $Dst)
 
     if ($Env:VSCMD_ARG_TGT_ARCH -like '*x64') {
         $target = 'VC-WIN64A'
     } else {
         $target = 'VC-WIN32'
     }
-    perl Configure --prefix=$Dst --openssldir=. $target
+    if ($Branch -eq 'openssl-1.1.1') {
+        perl Configure --prefix=$Dst --openssldir=. $target
+    } else {
+        perl Configure enable-fips --prefix=$Dst --openssldir=. $target
+    }
     if ($lastexitcode -ne 0) {
         Write-Host 'Failed to configure'
         Exit 1
@@ -77,7 +81,7 @@ foreach ($tarball in $links.href) {
 
     $dst = '/' + $branch + '-' + $arch
     Set-Location $build
-    Build-OpenSSL -Dst $dst
+    Build-OpenSSL -Branch $branch -Dst $dst
     Set-Location ../..
 
     Write-Host 'Compressing' $zip
