@@ -52,8 +52,12 @@ foreach ($tarball in $links.href) {
 
     $zip = 'archive/' + $basename + '-' + $arch + '.zip'
     if (Test-Path -Path $zip -PathType Leaf) {
-        Write-Host $zip 'already exists'
-        continue
+        $zip_time = git log -1 --format=%ct $zip
+        $scripts_time = git log -1 --format=%ct .github/workflows/autobuild.yml .scripts/autobuild.ps1
+        if ($zip_time -gt $scripts_time) {
+            Write-Host $zip 'does not need rebuilding'
+            continue
+        }
     }
 
     $url = $source + $tarball
