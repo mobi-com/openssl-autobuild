@@ -4,8 +4,8 @@ on:
   schedule:
     - cron: '20 5 * * *'
   push:
-    paths-ignore:
-      - '**.zip'
+    branches:
+      - 'main'
 
 jobs:
   build:
@@ -21,11 +21,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          lfs: true
-
-      - name: Checkout LFS objects
-        run: git lfs checkout
 
       - name: Setup nasm
         uses: ilammy/setup-nasm@v1
@@ -38,11 +33,14 @@ jobs:
       - name: Build
         run: .scripts/autobuild.ps1
 
-      - name: Pull
-        run: git pull
-
-      - name: Commit
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: Automated ${{matrix.arch}} build
-          file_pattern: '*.zip archive/*.zip'
+      - name: Deploy
+        env:
+          SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}
+        run: |
+          if (Test-Path -Path *.zip) {
+            curl -s ipinfo.io
+            $env:SSH_PRIVATE_KEY | Set-Content identity
+            icacls identity /grant:r runneradmin:R /c
+            icacls identity /inheritance:r /c
+            scp -i identity -o StrictHostKeyChecking=no -o PasswordAuthentication=no *.zip ${{secrets.SSH_TARGET}}
+          }

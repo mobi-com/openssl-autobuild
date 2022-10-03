@@ -50,22 +50,29 @@ foreach ($tarball in $links.href) {
         $branch = $basename -replace '^(openssl-[0-9]+\.[0-9]+).*', '$1'
     }
 
-    $zip = 'archive/' + $basename + '-' + $arch + '.zip'
-    if (Test-Path -Path $zip -PathType Leaf) {
-        $zip_time = git log -1 --format=%ct $zip
+    $zip = $basename + '-' + $arch + '.zip'
+    $download_url = 'https://www.stunnel.org/openssl/windows/archive/' + $zip
+    $result = Invoke-WebRequest -Method HEAD -Uri $download_url
+    if ($result.StatusCode -eq 200) {
+        Write-Host $download_url 'date:' $result.Headers['Last-Modified']
+        $culture = Get-Culture -Name en-US
+        $datetime = $result.Headers['Last-Modified'].ToDateTime($culture)
+        $zip_time = [int64](Get-Date -Date $datetime -UFormat '%s')
         $scripts_time = git log -1 --format=%ct .github/workflows/autobuild.yml .scripts/autobuild.ps1
         if ($zip_time -gt $scripts_time) {
             Write-Host $zip 'does not need rebuilding'
             continue
         }
+    } else {
+        Write-Host $download_url 'status:' $result.StatusCode $result.StatusDescription
     }
 
-    $url = $source + $tarball
+    $openssl_url = $source + $tarball
     if (Test-Path -Path $tarball -PathType Leaf) {
         Write-Host $tarball 'already downloaded'
     } else {
         Write-Host 'Downloading' $tarball
-        Invoke-RestMethod -Uri $url -OutFile $tarball
+        Invoke-RestMethod -Uri $openssl_url -OutFile $tarball
     }
 
     if (-Not (Test-Path -Path $arch -PathType Container)) {
@@ -89,12 +96,5 @@ foreach ($tarball in $links.href) {
     Set-Location ../..
 
     Write-Host 'Compressing' $zip
-    if (-Not (Test-Path -Path 'archive' -PathType Container)) {
-        $result = New-Item -ItemType Directory -Name 'archive'
-    }
     Compress-Archive -Path $dst -DestinationPath $zip -Force
-
-    $permanent = $branch + '-' + $arch + '.zip'
-    Write-Host 'Copying' $zip 'to' $permanent
-    Copy-Item $zip -Destination $permanent
 }
