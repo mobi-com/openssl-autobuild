@@ -38,7 +38,6 @@ jobs:
           SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}
         run: |
           if (Test-Path -Path *.zip) {
-            curl -s ipinfo.io
             $env:SSH_PRIVATE_KEY | Set-Content identity
             icacls identity /grant:r runneradmin:R /c
             icacls identity /inheritance:r /c
