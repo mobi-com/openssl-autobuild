@@ -52,8 +52,11 @@ foreach ($tarball in $links.href) {
 
     $zip = $basename + '-' + $arch + '.zip'
     $download_url = 'https://www.stunnel.org/openssl/windows/archive/' + $zip
-    $result = Invoke-WebRequest -Method HEAD -Uri $download_url
-    if ($result.StatusCode -eq 200) {
+    try {
+        $result = Invoke-WebRequest -Method HEAD -Uri $download_url
+        if ($result.StatusCode -ne 200) {
+            throw 'Could not find the previous build'
+        }
         Write-Host $download_url 'date:' $result.Headers['Last-Modified']
         $culture = Get-Culture -Name en-US
         $datetime = $result.Headers['Last-Modified'].ToDateTime($culture)
@@ -63,8 +66,8 @@ foreach ($tarball in $links.href) {
             Write-Host $zip 'does not need rebuilding'
             continue
         }
-    } else {
-        Write-Host $download_url 'status:' $result.StatusCode $result.StatusDescription
+    } catch {
+        Write-Host 'Could not find the previous build'
     }
 
     $openssl_url = $source + $tarball
