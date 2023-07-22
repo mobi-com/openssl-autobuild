@@ -4,8 +4,6 @@ on:
   schedule:
     - cron: '20 5 * * *'
   push:
-    branches:
-      - 'main'
   workflow_dispatch:
     branches:
       - 'main'
@@ -37,6 +35,7 @@ jobs:
         run: .scripts/autobuild.ps1
 
       - name: Deploy
+        if: github.ref == 'ref/heads/main'
         env:
           SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}
         run: |
