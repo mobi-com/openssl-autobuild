@@ -35,7 +35,7 @@ jobs:
         run: .scripts/autobuild.ps1
 
       - name: Deploy
-        if: github.ref == 'ref/heads/main'
+        if: ${{github.ref == 'ref/heads/main'}}
         env:
           SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}
         run: |
