@@ -13,9 +13,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - arch: 'x86'
-          - arch: 'x64'
+        arch: [x86, x64]
+        index: [0, 1, 2]
+        options: ['', '-static']
 
     runs-on: windows-latest
 
@@ -32,7 +32,7 @@ jobs:
           arch: ${{matrix.arch}}
 
       - name: Build
-        run: .scripts/autobuild.ps1
+        run: .scripts/autobuild.ps1 ${{matrix.index}} ${{matrix.options}}
 
       - name: Deploy
         if: ${{github.ref == 'ref/heads/main'}}
