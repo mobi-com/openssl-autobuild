@@ -67,12 +67,12 @@ if ($basename -like 'openssl-1.*') {
     $branch = $basename -replace '^(openssl-[0-9]+\.[0-9]+).*', '$1'
 }
 
-$zip = $basename + '-' + $arch + '-' + $build_type + '.zip'
-$download_url = 'https://www.stunnel.org/openssl/windows/archive/' + $zip
+$zip = "$basename-$arch-$build_type.zip"
+$download_url = "https://www.stunnel.org/openssl/windows/archive/$zip"
 try {
     $result = Invoke-WebRequest -Method HEAD -Uri $download_url
     if ($result.StatusCode -ne 200) {
-        throw 'Could not find the previous build'
+        throw "Could not find $download_url"
     }
     Write-Host $download_url 'date:' $result.Headers['Last-Modified']
     $culture = Get-Culture -Name en-US
@@ -84,10 +84,10 @@ try {
         continue
     }
 } catch {
-    Write-Host 'Could not find the previous build'
+    Write-Host "Could not find $download_url"
 }
 
-$openssl_url = $source + $tarball
+$openssl_url = "$source$tarball"
 if (Test-Path -Path $tarball -PathType Leaf) {
     Write-Host $tarball 'already downloaded'
 } else {
@@ -98,7 +98,7 @@ if (Test-Path -Path $tarball -PathType Leaf) {
 if (-Not (Test-Path -Path $arch -PathType Container)) {
     $result = New-Item -ItemType Directory -Name $arch
 }
-$build = $arch + '/' + $basename
+$build = "$arch/$basename"
 if (Test-Path -Path $build -PathType Container) {
     Write-Host 'Removing' $build
     Remove-Item -Recurse -Force $build
@@ -110,7 +110,7 @@ if ($lastexitcode -ne 0) {
     Exit 1
 }
 
-$dst = '/' + $branch + '-' + $arch
+$dst = "/$branch-$arch"
 Set-Location $build
 Build-OpenSSL -Branch $branch -Dst $dst
 Set-Location ../..
