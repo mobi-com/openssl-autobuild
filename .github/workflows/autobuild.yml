@@ -34,7 +34,7 @@ jobs:
       - name: Build
         run: .scripts/autobuild.ps1 ${{matrix.index}} ${{matrix.options}}
 
-      - name: Deploy
+      - name: Upload
         if: ${{github.ref == 'refs/heads/main'}}
         env:
           SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}

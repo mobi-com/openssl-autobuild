@@ -110,7 +110,7 @@ if ($lastexitcode -ne 0) {
     Exit 1
 }
 
-$dst = "/$branch-$arch"
+$dst = '/OpenSSL'
 Set-Location $build
 Build-OpenSSL -Branch $branch -Dst $dst
 Set-Location ../..
