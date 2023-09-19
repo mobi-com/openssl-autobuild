@@ -6,22 +6,28 @@ param (
     [int]$index = 0,
 
     # configure parameters
-    [string]$options = ''
+    [string]$build_type = 'dll'
 )
 
 function Build-OpenSSL {
     param ($Branch, $Dst)
 
+    if ($Branch -eq 'openssl-1.1.1') {
+        $fips = ''
+    } else {
+        $fips = 'enable-fips'
+    }
+    if ($build_type -eq 'static') {
+        $options = '-static'
+    } else {
+        $options = ''
+    }
     if ($Env:VSCMD_ARG_TGT_ARCH -like '*x64') {
         $target = 'VC-WIN64A'
     } else {
         $target = 'VC-WIN32'
     }
-    if ($Branch -eq 'openssl-1.1.1') {
-        perl Configure --prefix=$Dst --openssldir=. $options $target
-    } else {
-        perl Configure enable-fips --prefix=$Dst --openssldir=. -options $target
-    }
+    perl Configure $fips --prefix=$Dst --openssldir=. $options $target
     if ($lastexitcode -ne 0) {
         Write-Host 'Failed to configure'
         Exit 1
@@ -61,7 +67,7 @@ if ($basename -like 'openssl-1.*') {
     $branch = $basename -replace '^(openssl-[0-9]+\.[0-9]+).*', '$1'
 }
 
-$zip = $basename + '-' + $arch + $options + '.zip'
+$zip = $basename + '-' + $arch + '-' + $build_type + '.zip'
 $download_url = 'https://www.stunnel.org/openssl/windows/archive/' + $zip
 try {
     $result = Invoke-WebRequest -Method HEAD -Uri $download_url

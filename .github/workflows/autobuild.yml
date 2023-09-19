@@ -15,7 +15,7 @@ jobs:
       matrix:
         arch: [x86, x64]
         index: [0, 1, 2, 3]
-        options: ['', '-static']
+        options: [dll, static]
 
     runs-on: windows-latest
 
