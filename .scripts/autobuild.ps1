@@ -81,10 +81,10 @@ try {
     $scripts_time = git log -1 --format=%ct .github/workflows/autobuild.yml .scripts/autobuild.ps1
     if ($zip_time -gt $scripts_time) {
         Write-Host $zip 'does not need rebuilding'
-        continue
+        Exit 0
     }
 } catch {
-    Write-Host "Could not find $download_url"
+    Write-Host "Exception: $PSItem"
 }
 
 $openssl_url = "$source$tarball"
