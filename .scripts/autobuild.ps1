@@ -55,10 +55,10 @@ function Build-OpenSSL {
 $ErrorActionPreference = 'Stop'
 
 $Env:PATH += ';C:\Strawberry\perl\bin;C:\Program Files\NASM'
-$source = 'https://www.openssl.org/source/'
-$site = Invoke-WebRequest $source
-$links = $site.Links | Where-Object {$_.href -like 'openssl-*.tar.gz'}
-$tarball = $links.href[$index]
+$site = Invoke-WebRequest 'https://openssl-library.org/source/index.html'
+$urls = $site.Links.href | Where-Object {$_ -like '*/openssl-*.tar.gz'}
+$openssl_url = $urls[$index]
+$tarball = $openssl_url -replace '^.*/'
 $arch = $Env:VSCMD_ARG_TGT_ARCH
 $basename = $tarball -replace '\.tar\.gz$'
 if ($basename -like 'openssl-1.*') {
@@ -87,7 +87,6 @@ try {
     Write-Host "Exception: $PSItem"
 }
 
-$openssl_url = "$source$tarball"
 if (Test-Path -Path $tarball -PathType Leaf) {
     Write-Host $tarball 'already downloaded'
 } else {
