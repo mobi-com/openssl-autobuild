@@ -61,6 +61,10 @@ $openssl_url = $urls[$index]
 $tarball = $openssl_url -replace '^.*/'
 $arch = $Env:VSCMD_ARG_TGT_ARCH
 $basename = $tarball -replace '\.tar\.gz$'
+if ($basename -eq 'openssl-3.1.7') {
+    Write-Host 'Skipping unbuildable' $basename
+    Exit 0
+}
 if ($basename -like 'openssl-1.*') {
     $branch = $basename -replace '^(openssl-[0-9]+\.[0-9]+\.[0-9]+).*', '$1'
 } else {
