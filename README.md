@@ -3,6 +3,9 @@ OpenSSL releases automatically built with GitHub Actions
 
 ## 64-bit Builds
 
+* The latest OpenSSL 3.5
+  [dll](https://www.stunnel.org/openssl/windows/openssl-3.5-x64-dll.zip) and
+  [static](https://www.stunnel.org/openssl/windows/openssl-3.5-x64-static.zip) build
 * The latest OpenSSL 3.4
   [dll](https://www.stunnel.org/openssl/windows/openssl-3.4-x64-dll.zip) and
   [static](https://www.stunnel.org/openssl/windows/openssl-3.4-x64-static.zip) build
@@ -21,6 +24,9 @@ OpenSSL releases automatically built with GitHub Actions
 
 ## 32-bit Builds
 
+* The latest OpenSSL 3.5
+  [dll](https://www.stunnel.org/openssl/windows/openssl-3.5-x86-dll.zip) and
+  [static](https://www.stunnel.org/openssl/windows/openssl-3.5-x86-static.zip) build
 * The latest OpenSSL 3.4
   [dll](https://www.stunnel.org/openssl/windows/openssl-3.4-x86-dll.zip) and
   [static](https://www.stunnel.org/openssl/windows/openssl-3.4-x86-static.zip) build
