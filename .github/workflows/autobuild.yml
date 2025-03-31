@@ -45,5 +45,5 @@ jobs:
             $env:SSH_PRIVATE_KEY | Set-Content identity
             icacls identity /grant:r runneradmin:R /c
             icacls identity /inheritance:r /c
-            scp -i identity -o StrictHostKeyChecking=no -o PasswordAuthentication=no *.zip ${{secrets.SSH_TARGET}}
+            scp -O -i identity -o StrictHostKeyChecking=no -o PasswordAuthentication=no *.zip ${{secrets.SSH_TARGET}}
           }
